@@ -1,0 +1,47 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - v1.edp.epam.com
+  resources:
+  - argoapplications
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - v1.edp.epam.com
+  resources:
+  - argoapplications/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - v1.edp.epam.com
+  resources:
+  - argoapplications/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - watch
+  - list
+  - update
+- apiGroups:
+    - ""
+  resources:
+  - secrets/finalizers
+  verbs:
+  - update
