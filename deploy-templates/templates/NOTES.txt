@@ -1,0 +1,1 @@
+1. Application edp-argocd-operator has been successfully deployed!!
