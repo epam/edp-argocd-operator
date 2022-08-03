@@ -24,8 +24,8 @@ annotations:
   artifacthub.io/license: Apache-2.0
   artifacthub.io/operator: "true"
   artifacthub.io/images: |
-    - name: edp-argocd-operator:0.1.0
-      image: epamedp/edp-argocd-operator:0.1.0
+    - name: edp-argocd-operator:0.1.0-SNAPSHOT.6
+      image: epamedp/edp-argocd-operator:0.1.0-SNAPSHOT.6
   artifacthub.io/operatorCapabilities: Basic Install
   artifacthub.io/crds: |
     - kind: ArgoApplication
