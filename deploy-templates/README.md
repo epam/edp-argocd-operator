@@ -25,7 +25,7 @@ A Helm chart for EDP Argo CD Operator
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"epamedp/edp-argocd-operator"` | Docker repository name |
-| image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
+| image.version | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
