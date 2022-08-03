@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "edp-argocd-operator.labels" . | nindent 4 }}
 spec:
-{{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-{{- end }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "edp-argocd-operator.selectorLabels" . | nindent 6 }}
@@ -28,40 +26,45 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - command:
+          - /manager
+          args:
+          - --leader-elect
+          name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.framework }}
-          {{- if eq .Values.framework "operator-sdk" }}
           env:
             - name: WATCH_NAMESPACE
               valueFrom:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.namespace
-            - name: POD_NAME
+            - name: ARGOCD_URL
               valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: metadata.name
-          {{- end}}
-          {{- end}}
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-{{- if .Values.framework }}
-{{- if ne .Values.framework "operator-sdk" }}
+                secretKeyRef:
+                  name: argocd-access
+                  key: url
+                  optional: false
+            - name: ARGOCD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: argocd-access
+                  key: auth-token
+                  optional: false
           livenessProbe:
-            tcpSocket:
-              port: http
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
           readinessProbe:
-            tcpSocket:
-              port: http
-{{- end}}
-{{- end}}
+            httpGet:
+              path: /readyz
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

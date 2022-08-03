@@ -1,12 +1,12 @@
 PACKAGE=github.com/epam/edp-common/pkg/config
 CURRENT_DIR=$(shell pwd)
 DIST_DIR=${CURRENT_DIR}/dist
-BIN_NAME=go-binary
+BIN_NAME=manager
 
 HOST_OS:=$(shell go env GOOS)
 HOST_ARCH:=$(shell go env GOARCH)
 
-VERSION=$(shell cat ${CURRENT_DIR}/VERSION)
+VERSION=$(shell git describe --tags | sed 's/^v//')
 BUILD_DATE=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 GIT_COMMIT=$(shell git rev-parse HEAD)
 GIT_TAG=$(shell if [ -z "`git status --porcelain`" ]; then git describe --exact-match --tags HEAD 2>/dev/null; fi)
@@ -31,10 +31,11 @@ help:  ## Display this help
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=deploy-templates/crds
+	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 .PHONY: generate
-generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
-	$(CONTROLLER_GEN) rbac:roleName=manager-role object paths="./..."
+generate: controller-gen api-docs ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
+	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./api/..."
 
 .PHONY: validate-docs
 validate-docs: api-docs helm-docs  ## Validate helm and api docs
@@ -42,15 +43,19 @@ validate-docs: api-docs helm-docs  ## Validate helm and api docs
 	@git diff -s --exit-code docs/api.md || (echo " Run 'make api-docs' to address the issue." && git diff && exit 1)
 
 # Run tests
-test: fmt vet
+.PHONY: test
+test: manifests generate fmt vet
 	go test ./... -coverprofile=coverage.out `go list ./...`
 
+.PHONY: fmt
 fmt:  ## Run go fmt
 	go fmt ./...
 
+.PHONY: vet
 vet:  ## Run go vet
 	go vet ./...
 
+.PHONY: lint
 lint: ## Run go lint
 	golangci-lint run
 
@@ -66,9 +71,9 @@ clean:  ## clean up
 .PHONY: changelog
 changelog: git-chglog	## generate changelog
 ifneq (${NEXT_RELEASE_TAG},)
-	$(GITCHGLOG) --next-tag v${NEXT_RELEASE_TAG} -o CHANGELOG.md v1.7.0..
+	$(GITCHGLOG) --next-tag v${NEXT_RELEASE_TAG} -o CHANGELOG.md v0.1.0..
 else
-	$(GITCHGLOG) -o CHANGELOG.md v1.7.0..
+	$(GITCHGLOG) -o CHANGELOG.md v0.1.0..
 endif
 
 .PHONY: api-docs
@@ -78,6 +83,8 @@ api-docs: crdoc	## generate CRD docs
 .PHONY: helm-docs
 helm-docs: helmdocs	## generate helm docs
 	$(HELMDOCS)
+
+##@ Build Dependencies
 
 HELMDOCS = ${CURRENT_DIR}/bin/helm-docs
 .PHONY: helmdocs
@@ -97,7 +104,7 @@ crdoc: ## Download crdoc locally if necessary.
 CONTROLLER_GEN = ${CURRENT_DIR}/bin/controller-gen
 .PHONY: controller-gen
 controller-gen: ## Download controller-gen locally if necessary.
-	$(call go-get-tool,$(CONTROLLER_GEN),sigs.k8s.io/controller-tools/cmd/controller-gen,v0.9.0)
+	$(call go-get-tool,$(CONTROLLER_GEN),sigs.k8s.io/controller-tools/cmd/controller-gen,v0.9.2)
 # go-get-tool will 'go get' any package $2 and install it to $1.
 PROJECT_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 define go-get-tool

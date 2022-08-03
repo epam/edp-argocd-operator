@@ -1,9 +1,25 @@
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
+  creationTimestamp: null
   name: manager-role
 rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets/finalizers
+  verbs:
+  - update
 - apiGroups:
   - v1.edp.epam.com
   resources:
@@ -29,19 +45,4 @@ rules:
   verbs:
   - get
   - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - get
-  - watch
-  - list
-  - update
-- apiGroups:
-    - ""
-  resources:
-  - secrets/finalizers
-  verbs:
   - update

@@ -1,15 +1,13 @@
-{{ if .Values.framework }}
-{{ if eq .Values.framework "operator-sdk" }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-    name: {{ include "edp-argocd-operator.serviceAccountName" . }}-edp
+  name: {{ include "edp-argocd-operator.serviceAccountName" . }}-rolebinding
+  labels:
+    {{- include "edp-argocd-operator.labels" . | nindent 4 }}
 roleRef:
-    kind: Role
-    name: edp-{{ include "edp-argocd-operator.serviceAccountName" . }}-role
-    apiGroup: rbac.authorization.k8s.io
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "edp-argocd-operator.serviceAccountName" . }}-role
 subjects:
-    - kind: ServiceAccount
-      name: {{ include "edp-argocd-operator.serviceAccountName" . }}
-{{ end }}
-{{ end }}
+- kind: ServiceAccount
+  name: {{ include "edp-argocd-operator.serviceAccountName" . }}

@@ -1,19 +1,80 @@
-{{ if .Values.framework }}
-{{ if eq .Values.framework "operator-sdk" }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-    name: edp-{{ include "edp-argocd-operator.serviceAccountName" . }}-role
+  name: {{ include "edp-argocd-operator.serviceAccountName" . }}-role
+  labels:
+    {{- include "edp-argocd-operator.labels" . | nindent 4 }}
 rules:
-    - apiGroups:
-          - ""
-      resources:
-          - configmaps
-          - pods
-      verbs:
-          - create
-          - get
-          - list
-          - delete
-{{ end}}
-{{ end}}
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - v1.edp.epam.com
+  resources:
+  - argoapplications
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - v1.edp.epam.com
+  resources:
+  - argoapplications/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - v1.edp.epam.com
+  resources:
+  - argoapplications/status
+  verbs:
+  - get
+  - patch
+  - update
+# permissions to do leader election.
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
