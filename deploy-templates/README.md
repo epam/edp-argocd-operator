@@ -22,6 +22,9 @@ A Helm chart for EDP Argo CD Operator
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
+| externalSecrets.enabled | bool | `false` | Enable External Secret Operator usage |
+| externalSecrets.secretStoreName | string | `"aws-parameterstore"` | edp-install chart by default provision SecretStore with name `aws-parameterstore` |
+| externalSecrets.ssmParameterStoreName | string | `"/edp/deploy-secrets"` | Value name in AWS ParameterStore |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"epamedp/edp-argocd-operator"` | Docker repository name |

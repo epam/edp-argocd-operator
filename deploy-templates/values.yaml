@@ -8,6 +8,17 @@ image:
   # -- Overrides the image tag whose default is the chart appVersion.
   version: ""
 
+# Configure External Secrets Operator to provision secrets for Platform and/or EDP
+# https://external-secrets.io/latest/provider-aws-secrets-manager/
+# See https://github.com/epam/edp-install/blob/master/deploy-templates/templates/external-secrets/secretstore.yaml for details
+externalSecrets:
+  # -- Enable External Secret Operator usage
+  enabled: false
+  # -- edp-install chart by default provision SecretStore with name `aws-parameterstore`
+  secretStoreName: aws-parameterstore
+  # -- Value name in AWS ParameterStore
+  ssmParameterStoreName: /edp/deploy-secrets
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
