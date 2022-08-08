@@ -3,8 +3,8 @@ description: A Helm chart for EDP Argo CD Operator
 home: https://epam.github.io/edp-install/
 name: edp-argocd-operator
 type: application
-version: 0.1.0
-appVersion: 0.1.0
+version: 0.1.1
+appVersion: 0.1.1
 icon: https://epam.github.io/edp-install/assets/logo.png
 keywords:
   - edp
