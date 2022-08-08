@@ -5,23 +5,25 @@
 | :heavy_exclamation_mark: Please refer to [EDP documentation](https://epam.github.io/edp-install/) to get the notion of the main concepts and guidelines. |
 | --- |
 
-Get acquainted with the EDP ArgoCD Operator and the installation process as well as the local development, and architecture scheme.
+Get acquainted with the EDP Argo CD Operator, its installation process, local development, and architectural scheme.
 
 ## Overview
 
-EDP Argo CD Operator is an EDP operator that is responsible for managing ArgoCD EDP Tenants. See below diagram for details:
+EDP Argo CD Operator is an EDP operator that manages the EDP Argo CD Tenants:
 
-* Argo CD is deployed in separate `argocd` namespace
-* Argo CD uses `cluster-admin` role for managing cluster resources
-* `control-plane` Application is created using AppsOfApps approach and its code is managed by `control-plane` members
-* `control-plane` is used to onboard new Argo CD Tenants (AppProjects)
-* `control-plane admin` provides `JWT Token` for each `EDP Tenant`
-* `EDP Tenant` deploys `edp-argocd-operator` in its EDP namespace `edpTenant` and uses `JWT Token` provided by `control-plane admin`
-* `EDP Tenant Member` manages `Argo CD Repositories` and `Argo CD Applications` using `kind: Secret` and `kind: ArgoApplication` in `edpTenant` namespace
+* Argo CD is deployed in a separate `argocd` namespace.
+* Argo CD uses a `cluster-admin` role for managing cluster resources.
+* The `control-plane` application is created using App of Apps approach, and its code is managed by the `control-plane` members.
+* The `control-plane` is used to onboard new Argo CD Tenants (App Projects).
+* The `control-plane admin` provides `JWT Token` for each `EDP Tenant`.
+* The `EDP Tenant` deploys `edp-argocd-operator` in its `edpTenant` EDP namespace, and uses `JWT Token` provided by `control-plane admin`.
+* The `EDP Tenant Member` manages `Argo CD Repositories` and `Argo CD Applications` using `kind: Secret` and `kind: ArgoApplication` in the `edpTenant` namespace.
+
+See a diagram below for the details:
 
 ![edpTenant](docs/assets/edpTenant.png)
 
-## Deployment example
+## Deployment Example
 
 Repository:
 
@@ -48,7 +50,7 @@ stringData:
     -----END OPENSSH PRIVATE KEY-----
 ```
 
-EDP Argo CD Application has the same specification as native Argo CD one
+EDP Argo CD Application has the same specification as the native Argo CD Application:
 
 ```yaml
 apiVersion: v1.edp.epam.com/v1alpha1
@@ -82,22 +84,22 @@ spec:
 
 ## Prerequisites
 
-1. Linux machine or Windows Subsystem for Linux instance with [Helm 3](https://helm.sh/docs/intro/install/) installed
-2. Admin access to the EDP Namespace
-3. Access to Argo CD (and JWT Token)
-4. EDP project/namespace is deployed by following the [Install EDP](https://epam.github.io/edp-install/operator-guide/install-edp/) instruction
+1. Linux machine or Windows Subsystem for Linux instance with the installed [Helm v.3](https://helm.sh/docs/intro/install/).
+2. Admin access to the EDP namespace.
+3. Access to Argo CD, including the generated JSON Web Token.
+4. Deployed EDP project/namespace. Please follow the [Install EDP](https://epam.github.io/edp-install/operator-guide/install-edp/) instruction.
 
 ## Installation
 
-In order to install the Operator, follow the steps below:
+In order to install the EDP Argo CD Operator, follow the steps below:
 
-1. To add the Helm EPAMEDP Charts for local client, run "helm repo add":
+1. To add the Helm EPAMEDP charts for a local client, run the `helm repo add` command:
 
     ```bash
     helm repo add epmdedp https://epam.github.io/edp-helm-charts/stable
     ```
 
-2. Choose available Helm chart version:
+2. Select the available Helm chart version:
 
     ```bash
     helm search repo epmdedp/edp-argocd-operator ---devel
@@ -106,26 +108,23 @@ In order to install the Operator, follow the steps below:
     epmdedp/edp-argocd-operator   0.1.0  	      0.1.0             A Helm chart for EDP Argo CD Operator
     ```
 
-    _**NOTE:** It is highly recommended to use the latest released version._
+    _**NOTE:** It is highly recommended to use the latest version of the Helm chart._
 
-3. Deploy operator:
+3. Deploy the EDP Argo CD Operator. Chart parameters are specified in the [deploy-templates/README](deploy-templates/README.md) file.
 
-    Chart parameters available in [deploy-templates/README.md](deploy-templates/README.md):
-
-4. Install operator in the <edp_cicd_project> namespace with the helm command; find below the installation command example:
+4. Install the EDP Argo CD Operator to the <edp_cicd_project> namespace with the following Helm command:
 
     ```bash
     helm install edp-argocd-operator epamedp/edp-argocd-operator \
       --version <chart_version> --namespace <edp_cicd_project>
     ```
 
-5. Check the <edp_cicd_project> namespace that should contain operator deployment with your operator in a running status.
+5. Check that the deployment of your EDP Argo CD Operator is running in the <edp_cicd_project> namespace.
 
 ## Local Development
 
-In order to develop the operator, first set up a local environment. For details, please refer to the [Developer Guide](https://epam.github.io/edp-install/developer-guide/local-development/) page.
+In order to develop the EDP Argo CD Operator, start from [setting up a local environment](https://epam.github.io/edp-install/developer-guide/local-development/).
 
 ### Related Articles
 
-* [Architecture Scheme of Sonar Operator](docs/arch.md)
 * [Install EDP](https://epam.github.io/edp-install/operator-guide/install-edp/)
