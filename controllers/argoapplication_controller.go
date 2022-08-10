@@ -26,9 +26,9 @@ type ArgoApplicationReconciler struct {
 	ApplicationHTTPClient *argoclient.ApplicationHTTPClient
 }
 
-//+kubebuilder:rbac:groups=v1.edp.epam.com,resources=argoapplications,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=v1.edp.epam.com,resources=argoapplications/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=v1.edp.epam.com,resources=argoapplications/finalizers,verbs=update
+//+kubebuilder:rbac:groups=v1.edp.epam.com,namespace=placeholder,resources=argoapplications,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=v1.edp.epam.com,namespace=placeholder,resources=argoapplications/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=v1.edp.epam.com,namespace=placeholder,resources=argoapplications/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.

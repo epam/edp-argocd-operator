@@ -30,8 +30,8 @@ type RepositoryReconciler struct {
 	RepositoryHTTPClient *argoclient.RepositoryHTTPClient
 }
 
-//+kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch;update
-//+kubebuilder:rbac:groups="",resources=secrets/finalizers,verbs=update
+//+kubebuilder:rbac:groups="",namespace=placeholder,resources=secrets,verbs=get;list;watch;update
+//+kubebuilder:rbac:groups="",namespace=placeholder,resources=secrets/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
