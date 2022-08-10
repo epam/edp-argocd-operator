@@ -33,7 +33,7 @@
 ### Bug Fixes
 
 - Rename secret key for external secret [EPMDEDP-10225](https://jiraeu.epam.com/browse/EPMDEDP-10225)
-- Use image.version for helm chart deployment [EPMDEDP-10225](https://jiraeu.epam.com/browse/EPMDEDP-10225)
+- Use image.tag for helm chart deployment [EPMDEDP-10225](https://jiraeu.epam.com/browse/EPMDEDP-10225)
 
 ### Routine
 

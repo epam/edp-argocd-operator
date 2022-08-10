@@ -6,7 +6,7 @@ image:
   repository: epamedp/edp-argocd-operator
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion.
-  version: ""
+  tag: ""
 
 # Configure External Secrets Operator to provision secrets for Platform and/or EDP
 # https://external-secrets.io/latest/provider-aws-secrets-manager/
