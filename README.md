@@ -102,7 +102,7 @@ In order to install the EDP Argo CD Operator, follow the steps below:
 2. Select the available Helm chart version:
 
     ```bash
-    helm search repo epmdedp/edp-argocd-operator ---devel
+    helm search repo epmdedp/edp-argocd-operator -l
 
     NAME                          CHART VERSION   APP VERSION       DESCRIPTION
     epmdedp/edp-argocd-operator   0.1.0  	      0.1.0             A Helm chart for EDP Argo CD Operator
@@ -112,18 +112,20 @@ In order to install the EDP Argo CD Operator, follow the steps below:
 
 3. Deploy the EDP Argo CD Operator. Chart parameters are specified in the [deploy-templates/README](deploy-templates/README.md) file.
 
-4. Install the EDP Argo CD Operator to the <edp_cicd_project> namespace with the following Helm command:
+4. Install the EDP Argo CD Operator to the <edp-project> namespace with the following Helm command:
 
     ```bash
     helm install edp-argocd-operator epamedp/edp-argocd-operator \
-      --version <chart_version> --namespace <edp_cicd_project>
+      --version <chart_version> --namespace <edp-project>
     ```
 
-5. Check that the deployment of your EDP Argo CD Operator is running in the <edp_cicd_project> namespace.
+5. Check that the deployment of your EDP Argo CD Operator is running in the <edp-project> namespace.
 
 ## Local Development
 
-In order to develop the EDP Argo CD Operator, start from [setting up a local environment](https://epam.github.io/edp-install/developer-guide/local-development/).
+In order to develop the operator, first set up a local environment. For details, please refer to the [Local Development](https://epam.github.io/edp-install/developer-guide/local-development/) page.
+
+Development versions are also available, please refer to the [snapshot helm chart repository](https://epam.github.io/edp-helm-charts/snapshot/) page.
 
 ### Related Articles
 

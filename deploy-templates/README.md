@@ -27,8 +27,8 @@ A Helm chart for EDP Argo CD Operator
 | externalSecrets.ssmParameterStoreName | string | `"/edp/deploy-secrets"` | Value name in AWS ParameterStore |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"epamedp/edp-argocd-operator"` | Docker repository name |
-| image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
+| image.repository | string | `"epamedp/edp-argocd-operator"` | EDP argocd-operator Docker image name. The released image can be found on [Dockerhub](https://hub.docker.com/r/epamedp/edp-argocd-operator) |
+| image.tag | string | `""` | EDP argocd-operator Docker image tag. The released image can be found on [Dockerhub](https://hub.docker.com/r/epamedp/edp-argocd-operator/tags) |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
