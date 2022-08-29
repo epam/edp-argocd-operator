@@ -2,11 +2,28 @@
 ## [Unreleased]
 
 
-<a name="v0.1.2"></a>
-## [v0.1.2] - 2022-08-10
+<a name="v0.2.0"></a>
+## [v0.2.0] - 2022-08-26
+### Features
+
+- Populate operator metadata in logs during operator start [EPMDEDP-10403](https://jiraeu.epam.com/browse/EPMDEDP-10403)
+
+### Bug Fixes
+
+- Command `make manifest` should generate Role instead of ClusterRole [EPMDEDP-10408](https://jiraeu.epam.com/browse/EPMDEDP-10408)
+
+### Code Refactoring
+
+- Use repository and tag for image reference in chart [EPMDEDP-10389](https://jiraeu.epam.com/browse/EPMDEDP-10389)
+
 ### Routine
 
-- Add empty CHANGELOG.md file [EPMDEDP-10337](https://jiraeu.epam.com/browse/EPMDEDP-10337)
+- Add CHANGELOG.md file [EPMDEDP-10337](https://jiraeu.epam.com/browse/EPMDEDP-10337)
+- Add gcflags for go build artifact [EPMDEDP-10411](https://jiraeu.epam.com/browse/EPMDEDP-10411)
+
+### Documentation
+
+- Align README.md [EPMDEDP-10274](https://jiraeu.epam.com/browse/EPMDEDP-10274)
 
 
 <a name="v0.1.1"></a>
@@ -33,7 +50,7 @@
 ### Bug Fixes
 
 - Rename secret key for external secret [EPMDEDP-10225](https://jiraeu.epam.com/browse/EPMDEDP-10225)
-- Use image.tag for helm chart deployment [EPMDEDP-10225](https://jiraeu.epam.com/browse/EPMDEDP-10225)
+- Use image.version for helm chart deployment [EPMDEDP-10225](https://jiraeu.epam.com/browse/EPMDEDP-10225)
 
 ### Routine
 
@@ -46,6 +63,6 @@
 - Update README.md [EPMDEDP-10225](https://jiraeu.epam.com/browse/EPMDEDP-10225)
 
 
-[Unreleased]: https://github.com/epam/edp-argocd-operator/compare/v0.1.2...HEAD
-[v0.1.2]: https://github.com/epam/edp-argocd-operator/compare/v0.1.1...v0.1.2
+[Unreleased]: https://github.com/epam/edp-argocd-operator/compare/v0.2.0...HEAD
+[v0.2.0]: https://github.com/epam/edp-argocd-operator/compare/v0.1.1...v0.2.0
 [v0.1.1]: https://github.com/epam/edp-argocd-operator/compare/v0.1.0...v0.1.1
