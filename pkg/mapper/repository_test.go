@@ -13,6 +13,7 @@ func TestSecretToRestRepositoryModel(t *testing.T) {
 	type args struct {
 		secret *corev1.Secret
 	}
+
 	tests := []struct {
 		name    string
 		args    args

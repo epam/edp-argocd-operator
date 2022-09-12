@@ -58,8 +58,8 @@ vet:  ## Run go vet
 	go vet ./...
 
 .PHONY: lint
-lint: ## Run go lint
-	golangci-lint run
+lint: golangci-lint ## Run go lint
+	${GOLANGCILINT} run
 
 .PHONY: build
 build: clean ## build operator's binary
@@ -85,6 +85,11 @@ api-docs: crdoc	## generate CRD docs
 .PHONY: helm-docs
 helm-docs: helmdocs	## generate helm docs
 	$(HELMDOCS)
+
+GOLANGCILINT = ${CURRENT_DIR}/bin/golangci-lint
+.PHONY: golangci-lint
+golangci-lint: ## Download golangci-lint locally if necessary.
+	$(call go-get-tool,$(GOLANGCILINT),github.com/golangci/golangci-lint/cmd/golangci-lint,v1.49.0)
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.

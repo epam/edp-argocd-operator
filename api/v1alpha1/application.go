@@ -53,7 +53,7 @@ type ResourceIgnoreDifferences struct {
 	ManagedFieldsManagers []string `json:"managedFieldsManagers,omitempty" protobuf:"bytes,7,opt,name=managedFieldsManagers"`
 }
 
-// EnvEntry represents an entry in the application's environment
+// EnvEntry represents an entry in the application's environment.
 type EnvEntry struct {
 	// Name is the name of the variable, usually expressed in uppercase
 	Name string `json:"name" protobuf:"bytes,1,opt,name=name"`
@@ -62,10 +62,10 @@ type EnvEntry struct {
 	Value string `json:"value" protobuf:"bytes,2,opt,name=value"`
 }
 
-// Env is a list of environment variable entries
+// Env is a list of environment variable entries.
 type Env []*EnvEntry
 
-// ApplicationSource contains all required information about the source of an application
+// ApplicationSource contains all required information about the source of an application.
 type ApplicationSource struct {
 	// RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
 	RepoURL string `json:"repoURL" protobuf:"bytes,1,opt,name=repoURL"`
@@ -95,7 +95,7 @@ type ApplicationSource struct {
 }
 
 //
-// ApplicationSourceHelm holds helm specific options
+// ApplicationSourceHelm holds helm specific options.
 type ApplicationSourceHelm struct {
 	// ValuesFiles is a list of Helm value files to use when generating a template
 	ValueFiles []string `json:"valueFiles,omitempty" protobuf:"bytes,1,opt,name=valueFiles"`
@@ -125,7 +125,7 @@ type ApplicationSourceHelm struct {
 	SkipCrds bool `json:"skipCrds,omitempty" protobuf:"bytes,9,opt,name=skipCrds"`
 }
 
-// HelmParameter is a parameter that's passed to helm template during manifest generation
+// HelmParameter is a parameter that's passed to helm template during manifest generation.
 type HelmParameter struct {
 	// Name is the name of the Helm parameter
 	Name string `json:"name,omitempty" protobuf:"bytes,1,opt,name=name"`
@@ -137,7 +137,7 @@ type HelmParameter struct {
 	ForceString bool `json:"forceString,omitempty" protobuf:"bytes,3,opt,name=forceString"`
 }
 
-// HelmFileParameter is a file parameter that's passed to helm template during manifest generation
+// HelmFileParameter is a file parameter that's passed to helm template during manifest generation.
 type HelmFileParameter struct {
 	// Name is the name of the Helm parameter
 	Name string `json:"name,omitempty" protobuf:"bytes,1,opt,name=name"`
@@ -146,13 +146,13 @@ type HelmFileParameter struct {
 	Path string `json:"path,omitempty" protobuf:"bytes,2,opt,name=path"`
 }
 
-// KustomizeImage represents a Kustomize image definition in the format [old_image_name=]<image_name>:<image_tag>
+// KustomizeImage represents a Kustomize image definition in the format [old_image_name=]<image_name>:<image_tag>.
 type KustomizeImage string
 
-// KustomizeImages is a list of Kustomize images
+// KustomizeImages is a list of Kustomize images.
 type KustomizeImages []KustomizeImage
 
-// ApplicationSourceKustomize holds options specific to an Application source specific to Kustomize
+// ApplicationSourceKustomize holds options specific to an Application source specific to Kustomize.
 type ApplicationSourceKustomize struct {
 	// NamePrefix is a prefix appended to resources for Kustomize apps
 	NamePrefix string `json:"namePrefix,omitempty" protobuf:"bytes,1,opt,name=namePrefix"`
@@ -178,7 +178,7 @@ type ApplicationSourceKustomize struct {
 	ForceCommonAnnotations bool `json:"forceCommonAnnotations,omitempty" protobuf:"bytes,8,opt,name=forceCommonAnnotations"`
 }
 
-// JsonnetVar represents a variable to be passed to jsonnet during manifest generation
+// JsonnetVar represents a variable to be passed to jsonnet during manifest generation.
 type JsonnetVar struct {
 	Name string `json:"name" protobuf:"bytes,1,opt,name=name"`
 
@@ -187,7 +187,7 @@ type JsonnetVar struct {
 	Code bool `json:"code,omitempty" protobuf:"bytes,3,opt,name=code"`
 }
 
-// ApplicationSourceJsonnet holds options specific to applications of type Jsonnet
+// ApplicationSourceJsonnet holds options specific to applications of type Jsonnet.
 type ApplicationSourceJsonnet struct {
 	// ExtVars is a list of Jsonnet External Variables
 	ExtVars []JsonnetVar `json:"extVars,omitempty" protobuf:"bytes,1,opt,name=extVars"`
@@ -199,7 +199,7 @@ type ApplicationSourceJsonnet struct {
 	Libs []string `json:"libs,omitempty" protobuf:"bytes,3,opt,name=libs"`
 }
 
-// ApplicationSourceDirectory holds options for applications of type plain YAML or Jsonnet
+// ApplicationSourceDirectory holds options for applications of type plain YAML or Jsonnet.
 type ApplicationSourceDirectory struct {
 	// Recurse specifies whether to scan a directory recursively for manifests
 	Recurse bool `json:"recurse,omitempty" protobuf:"bytes,1,opt,name=recurse"`
@@ -214,14 +214,14 @@ type ApplicationSourceDirectory struct {
 	Include string `json:"include,omitempty" protobuf:"bytes,4,opt,name=include"`
 }
 
-// ApplicationSourcePlugin holds options specific to config management plugins
+// ApplicationSourcePlugin holds options specific to config management plugins.
 type ApplicationSourcePlugin struct {
 	Name string `json:"name,omitempty" protobuf:"bytes,1,opt,name=name"`
 
 	Env `json:"env,omitempty" protobuf:"bytes,2,opt,name=env"`
 }
 
-// ApplicationDestination holds information about the application's destination
+// ApplicationDestination holds information about the application's destination.
 type ApplicationDestination struct {
 	// Server specifies the URL of the target cluster and must be set to the Kubernetes control plane API
 	Server string `json:"server,omitempty" protobuf:"bytes,1,opt,name=server"`
@@ -242,7 +242,7 @@ type Info struct {
 
 type SyncOptions []string
 
-// SyncPolicy controls when a sync will be performed in response to updates in git
+// SyncPolicy controls when a sync will be performed in response to updates in git.
 type SyncPolicy struct {
 	// Automated will keep an application synced to the target revision
 	Automated *SyncPolicyAutomated `json:"automated,omitempty" protobuf:"bytes,1,opt,name=automated"`
@@ -254,7 +254,7 @@ type SyncPolicy struct {
 	Retry *RetryStrategy `json:"retry,omitempty" protobuf:"bytes,3,opt,name=retry"`
 }
 
-// RetryStrategy contains information about the strategy to apply when a sync failed
+// RetryStrategy contains information about the strategy to apply when a sync failed.
 type RetryStrategy struct {
 	// Limit is the maximum number of attempts for retrying a failed sync. If set to 0, no retries will be performed.
 	Limit int64 `json:"limit,omitempty" protobuf:"bytes,1,opt,name=limit"`
@@ -263,7 +263,7 @@ type RetryStrategy struct {
 	Backoff *Backoff `json:"backoff,omitempty" protobuf:"bytes,2,opt,name=backoff,casttype=Backoff"`
 }
 
-// Backoff is the backoff strategy to use on subsequent retries for failing syncs
+// Backoff is the backoff strategy to use on subsequent retries for failing syncs.
 type Backoff struct {
 	// Duration is the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
 	Duration string `json:"duration,omitempty" protobuf:"bytes,1,opt,name=duration"`
@@ -275,7 +275,7 @@ type Backoff struct {
 	MaxDuration string `json:"maxDuration,omitempty" protobuf:"bytes,3,opt,name=maxDuration"`
 }
 
-// SyncPolicyAutomated controls the behavior of an automated sync
+// SyncPolicyAutomated controls the behavior of an automated sync.
 type SyncPolicyAutomated struct {
 	// Prune specifies whether to delete resources from the cluster that are not found in the sources anymore as part of automated sync (default: false)
 	Prune bool `json:"prune,omitempty" protobuf:"bytes,1,opt,name=prune"`

@@ -7,7 +7,7 @@ import (
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
-// ArgoApplication is the Schema for the argoapplications API
+// ArgoApplication is the Schema for the argoapplications API.
 type ArgoApplication struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty" mapstructure:",squash"`
@@ -16,7 +16,7 @@ type ArgoApplication struct {
 	Status ApplicationStatus `json:"status,omitempty"`
 }
 
-// ApplicationStatus contains status information for the application
+// ApplicationStatus contains status information for the application.
 type ApplicationStatus struct {
 	// Status contains the result of reconciliation
 	// +optional
@@ -36,7 +36,7 @@ const (
 
 //+kubebuilder:object:root=true
 
-// ArgoApplicationList contains a list of ArgoApplication
+// ArgoApplicationList contains a list of ArgoApplication.
 type ArgoApplicationList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

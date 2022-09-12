@@ -236,6 +236,7 @@ func TestApplicationSpecToRestModel(t *testing.T) {
 	type args struct {
 		applicationSpec *v1alpha1.ApplicationSpec
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -269,6 +270,7 @@ func TestApplicationToRestModel(t *testing.T) {
 	type args struct {
 		argoApplication *v1alpha1.ArgoApplication
 	}
+
 	tests := []struct {
 		name    string
 		args    args

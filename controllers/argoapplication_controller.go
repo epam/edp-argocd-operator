@@ -13,13 +13,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	applicationApi "github.com/epam/edp-argocd-operator/api/v1alpha1"
+	argoApi "github.com/epam/edp-argocd-operator/api/v1alpha1"
 	"github.com/epam/edp-argocd-operator/pkg/argoclient"
 	"github.com/epam/edp-argocd-operator/pkg/argoclient/client/application_service"
 	"github.com/epam/edp-argocd-operator/pkg/mapper"
+	"github.com/epam/edp-argocd-operator/pkg/objectutil"
 )
 
-// ArgoApplicationReconciler reconciles a ArgoApplication object
+// ArgoApplicationReconciler reconciles a ArgoApplication object.
 type ArgoApplicationReconciler struct {
 	client.Client
 	Scheme                *runtime.Scheme
@@ -36,42 +37,55 @@ func (r *ArgoApplicationReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	reqLogger := log.FromContext(ctx)
 	reqLogger.Info("Processing ArgoApplication")
 
-	argoApplication := &applicationApi.ArgoApplication{}
+	argoApplication := &argoApi.ArgoApplication{}
 	if err := r.Get(ctx, req.NamespacedName, argoApplication); err != nil {
 		if k8serrors.IsNotFound(err) {
 			return ctrl.Result{}, nil
 		}
 
-		return reconcile.Result{}, err
+		return reconcile.Result{}, fmt.Errorf("failed to get application: %w", err)
 	}
 
-	argoApplication.Status.Status = applicationApi.ApplicationReconciliationStatusSuccess
-	argoApplication.Status.Error = ""
+	reconcileErr := r.syncApplication(ctx, reqLogger, argoApplication)
 
-	err := r.syncApplication(ctx, reqLogger, argoApplication)
-	if err != nil {
-		argoApplication.Status.Status = applicationApi.ApplicationReconciliationStatusError
-		argoApplication.Status.Error = err.Error()
+	if !objectutil.ObjectMarkDeleted(argoApplication) {
+		argoApplication.Status.Status = argoApi.ApplicationReconciliationStatusSuccess
+		argoApplication.Status.Error = ""
+
+		if reconcileErr != nil {
+			argoApplication.Status.Status = argoApi.ApplicationReconciliationStatusError
+			argoApplication.Status.Error = reconcileErr.Error()
+		}
+
+		if err := r.Status().Update(ctx, argoApplication); err != nil {
+			return reconcile.Result{}, fmt.Errorf("failed to update application status: %w", err)
+		}
 	}
 
-	if err := r.Status().Update(ctx, argoApplication); err != nil {
-		return reconcile.Result{}, err
+	if reconcileErr != nil {
+		return ctrl.Result{}, fmt.Errorf("application reconciliation failed: %w", reconcileErr)
 	}
 
-	return ctrl.Result{}, err
+	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *ArgoApplicationReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&applicationApi.ArgoApplication{}).
+	err := ctrl.NewControllerManagedBy(mgr).
+		For(&argoApi.ArgoApplication{}).
 		Complete(r)
+
+	if err != nil {
+		return fmt.Errorf("failed to setup application controller: %w", err)
+	}
+
+	return nil
 }
 
 func (r *ArgoApplicationReconciler) syncApplication(
 	ctx context.Context,
 	reqLogger logr.Logger,
-	argoApplication *applicationApi.ArgoApplication,
+	argoApplication *argoApi.ArgoApplication,
 ) error {
 	if argoApplication.GetDeletionTimestamp() != nil {
 		if controllerutil.ContainsFinalizer(argoApplication, argoFinalizer) {
@@ -82,21 +96,18 @@ func (r *ArgoApplicationReconciler) syncApplication(
 			reqLogger.Info(fmt.Sprintf("ArgoApplication %s deleted", argoApplication.Name))
 
 			controllerutil.RemoveFinalizer(argoApplication, argoFinalizer)
+
 			err := r.Update(ctx, argoApplication)
 			if err != nil {
-				return err
+				return fmt.Errorf("failed to remove finalizer from application: %w", err)
 			}
 		}
 
 		return nil
 	}
 
-	if !controllerutil.ContainsFinalizer(argoApplication, argoFinalizer) {
-		controllerutil.AddFinalizer(argoApplication, argoFinalizer)
-		err := r.Update(ctx, argoApplication)
-		if err != nil {
-			return err
-		}
+	if err := r.addFinalizer(ctx, argoApplication); err != nil {
+		return err
 	}
 
 	getParams := application_service.NewApplicationServiceGetParams().
@@ -106,8 +117,8 @@ func (r *ArgoApplicationReconciler) syncApplication(
 	_, err := r.ApplicationHTTPClient.Client.ApplicationServiceGet(getParams, r.ApplicationHTTPClient.AuthOptions)
 	if err != nil {
 		if argoclient.IsNotFoundError(err) {
-			if err := r.createArgoApplication(ctx, argoApplication, r.ApplicationHTTPClient); err != nil {
-				return fmt.Errorf("failed to create argoapplication, error: %w", err)
+			if err = r.createArgoApplication(ctx, argoApplication, r.ApplicationHTTPClient); err != nil {
+				return fmt.Errorf("failed to create argoapplication: %w", err)
 			}
 
 			reqLogger.Info(fmt.Sprintf("ArgoApplication %s created", argoApplication.Name))
@@ -115,11 +126,11 @@ func (r *ArgoApplicationReconciler) syncApplication(
 			return nil
 		}
 
-		return fmt.Errorf("failed to get argoapplication, error: %w", err)
+		return fmt.Errorf("failed to get argoapplication: %w", err)
 	}
 
 	if err := r.updateArgoApplication(ctx, argoApplication, r.ApplicationHTTPClient); err != nil {
-		return fmt.Errorf("failed to update argoapplication, error: %w", err)
+		return fmt.Errorf("failed to update argoapplication: %w", err)
 	}
 
 	reqLogger.Info(fmt.Sprintf("ArgoApplication %s updated", argoApplication.Name))
@@ -127,14 +138,14 @@ func (r *ArgoApplicationReconciler) syncApplication(
 	return nil
 }
 
-func (r *ArgoApplicationReconciler) createArgoApplication(
+func (*ArgoApplicationReconciler) createArgoApplication(
 	ctx context.Context,
-	argoApplication *applicationApi.ArgoApplication,
+	argoApplication *argoApi.ArgoApplication,
 	httpClient *argoclient.ApplicationHTTPClient,
 ) error {
 	body, err := mapper.ApplicationToRestModel(argoApplication)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to map application to rest model: %w", err)
 	}
 
 	params := application_service.NewApplicationServiceCreateParams().
@@ -142,18 +153,21 @@ func (r *ArgoApplicationReconciler) createArgoApplication(
 		WithBody(body)
 
 	_, err = httpClient.Client.ApplicationServiceCreate(params, httpClient.AuthOptions)
+	if err != nil {
+		return fmt.Errorf("failed to create application: %w", err)
+	}
 
-	return err
+	return nil
 }
 
-func (r *ArgoApplicationReconciler) updateArgoApplication(
+func (*ArgoApplicationReconciler) updateArgoApplication(
 	ctx context.Context,
-	argoApplication *applicationApi.ArgoApplication,
+	argoApplication *argoApi.ArgoApplication,
 	httpClient *argoclient.ApplicationHTTPClient,
 ) error {
 	body, err := mapper.ApplicationSpecToRestModel(&argoApplication.Spec)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to map application spec to rest model: %w", err)
 	}
 
 	params := application_service.NewApplicationServiceUpdateSpecParams().
@@ -162,13 +176,16 @@ func (r *ArgoApplicationReconciler) updateArgoApplication(
 		WithName(argoApplication.Name)
 
 	_, err = httpClient.Client.ApplicationServiceUpdateSpec(params, httpClient.AuthOptions)
+	if err != nil {
+		return fmt.Errorf("failed to update applcation spec: %w", err)
+	}
 
-	return err
+	return nil
 }
 
-func (r *ArgoApplicationReconciler) deleteArgoApplication(
+func (*ArgoApplicationReconciler) deleteArgoApplication(
 	ctx context.Context,
-	argoApplication *applicationApi.ArgoApplication,
+	argoApplication *argoApi.ArgoApplication,
 	httpClient *argoclient.ApplicationHTTPClient,
 ) error {
 	params := application_service.NewApplicationServiceDeleteParams().
@@ -176,18 +193,39 @@ func (r *ArgoApplicationReconciler) deleteArgoApplication(
 		WithName(argoApplication.Name)
 
 	_, err := httpClient.Client.ApplicationServiceDelete(params, httpClient.AuthOptions)
+	if err != nil {
+		return fmt.Errorf("failed to delete application: %w", err)
+	}
 
-	return err
+	return nil
 }
 
 func (r *ArgoApplicationReconciler) finalizeArgoApplication(
 	ctx context.Context,
-	argoApplication *applicationApi.ArgoApplication,
+	argoApplication *argoApi.ArgoApplication,
 	applicationHTTPClient *argoclient.ApplicationHTTPClient,
 ) error {
 	err := r.deleteArgoApplication(ctx, argoApplication, applicationHTTPClient)
 	if err != nil && !argoclient.IsNotFoundError(err) {
-		return fmt.Errorf("failed to delete argoapplication, error: %w", err)
+		return fmt.Errorf("failed to delete argoapplication: %w", err)
+	}
+
+	return nil
+}
+
+func (r *ArgoApplicationReconciler) addFinalizer(
+	ctx context.Context,
+	argoApplication *argoApi.ArgoApplication,
+) error {
+	if controllerutil.ContainsFinalizer(argoApplication, argoFinalizer) {
+		return nil
+	}
+
+	controllerutil.AddFinalizer(argoApplication, argoFinalizer)
+
+	err := r.Update(ctx, argoApplication)
+	if err != nil {
+		return fmt.Errorf("failed to add finalaizer to argo application: %w", err)
 	}
 
 	return nil

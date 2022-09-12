@@ -19,12 +19,14 @@ func SecretToRestRepositoryModel(secret *corev1.Secret) (*models.V1alpha1Reposit
 	if !ok {
 		return nil, errors.New("repository project can't be empty")
 	}
+
 	restRepository.Project = string(project)
 
 	url, ok := secret.Data["url"]
 	if !ok {
 		return nil, errors.New("repository url can't be empty")
 	}
+
 	restRepository.Repo = string(url)
 
 	if sshPrivate, ok := secret.Data["sshPrivateKey"]; ok {
@@ -40,6 +42,7 @@ func SecretToRestRepositoryModel(secret *corev1.Secret) (*models.V1alpha1Reposit
 		if err != nil {
 			return nil, fmt.Errorf("failde to get insecure value, error %w", err)
 		}
+
 		restRepository.Insecure = insecure
 	}
 

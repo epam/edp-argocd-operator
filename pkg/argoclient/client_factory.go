@@ -2,6 +2,7 @@ package argoclient
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"os"
 
@@ -78,7 +79,15 @@ func getArgoConfig() (*argoAccessData, error) {
 
 	u, err := url.Parse(argoUrl)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse argoUrl: %w", err)
+	}
+
+	if u.Host == "" {
+		return nil, errors.New("failed to get argo-cd host")
+	}
+
+	if u.Scheme == "" {
+		return nil, errors.New("failed to get argo-cd scheme")
 	}
 
 	return &argoAccessData{
