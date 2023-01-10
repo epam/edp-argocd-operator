@@ -105,7 +105,7 @@ In order to install the EDP Argo CD Operator, follow the steps below:
     helm search repo epmdedp/edp-argocd-operator -l
 
     NAME                          CHART VERSION   APP VERSION       DESCRIPTION
-    epmdedp/edp-argocd-operator   0.1.0  	      0.1.0             A Helm chart for EDP Argo CD Operator
+    epmdedp/edp-argocd-operator   0.2.0           0.2.0             A Helm chart for EDP Argo CD Operator
     ```
 
     _**NOTE:** It is highly recommended to use the latest version of the Helm chart._
